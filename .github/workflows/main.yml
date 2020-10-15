@@ -1,0 +1,13 @@
+on: [push]
+
+jobs:
+  build_manylinux:
+    runs-on: ubuntu-latest
+    name: Build a Manylinux Docker image
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build and deploy
+        run: ./build.sh

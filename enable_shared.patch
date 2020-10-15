@@ -1,0 +1,33 @@
+diff --git a/docker/build_scripts/build.sh b/docker/build_scripts/build.sh
+index 1201cb3..f392095 100755
+--- a/docker/build_scripts/build.sh
++++ b/docker/build_scripts/build.sh
+@@ -84,6 +84,7 @@ yum -y install \
+     libffi-devel \
+     make \
+     patch \
++    patchelf \
+     unzip \
+     which \
+     yasm \
+diff --git a/docker/build_scripts/build_utils.sh b/docker/build_scripts/build_utils.sh
+index 6cc44f2..b198aa5 100755
+--- a/docker/build_scripts/build_utils.sh
++++ b/docker/build_scripts/build_utils.sh
+@@ -44,7 +44,7 @@ function do_cpython_build {
+     fi
+     local prefix="/opt/_internal/cpython-${py_ver}${dir_suffix}"
+     mkdir -p ${prefix}/lib
+-    ./configure --prefix=${prefix} --disable-shared $unicode_flags > /dev/null
++    ./configure --prefix=${prefix} --enable-shared $unicode_flags > /dev/null
+     make -j2 > /dev/null
+     make install > /dev/null
+     popd
+@@ -54,6 +54,7 @@ function do_cpython_build {
+     if [ -e ${prefix}/bin/python3 ]; then
+         ln -s python3 ${prefix}/bin/python
+     fi
++    patchelf --set-rpath '$ORIGIN/../lib' ${prefix}/bin/python
+     ${prefix}/bin/python -m ensurepip
+ 
+     if [ -e ${prefix}/bin/pip3 ] && [ ! -e ${prefix}/bin/pip ]; then
